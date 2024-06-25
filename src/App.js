@@ -1,7 +1,8 @@
 import "./App.css";
 
+import React, { useState } from "react";
+
 import CircularProgress from "@mui/material/CircularProgress";
-import { useState } from "react";
 
 const api = {
   key: "745805e005d7ffeaa7c5ad678758f56a",
@@ -11,22 +12,20 @@ const api = {
 function App() {
   const [search, setSearch] = useState("");
   const [weather, setWeather] = useState({});
+  const [loader, setLoader] = useState(false);
 
-  /*
-    Search button is pressed. Make a fetch call to the Open Weather Map API.
-  */
-  const [loader, setLoader] = useState(false)
   const searchPressed = () => {
-    setLoader(true)
+    setLoader(true);
 
     fetch(`${api.base}weather?q=${search}&units=metric&APPID=${api.key}`)
       .then((res) => res.json())
       .then((result) => {
         setWeather(result);
-        setLoader(false)
-        console.log(result, "r")
+        setLoader(false);
+        console.log(result, "r");
       });
   };
+
   const weatherEmojis = {
     'clear sky': '☀️',
     'few clouds': '🌤️',
@@ -39,18 +38,15 @@ function App() {
     'snow': '❄️',
     'mist': '🌫️',
   };
-  console.log(weatherEmojis.hasOwnProperty(Object.keys(weather).length > 0 && weather?.weather[0]?.description?.toLowerCase()), "t")
-  const report = Object.keys(weather).length > 0 && weather?.weather[0]?.description?.toLowerCase()
-  const weatherEmoji = weatherEmojis[report || '🌦️'];
-  console.log(weatherEmoji, "ds", weather)
+
+  const report = Object.keys(weather).length > 0 && weather?.weather[0]?.description?.toLowerCase();
+  const weatherEmoji = weatherEmojis[report] || '🌦️';
+
   return (
     <div className="App">
       <header className="App-header">
-        {/* HEADER  */}
-
         <h1>Weather App</h1>
 
-        {/* Search Box - Input + Button  */}
         <div>
           <input
             type="text"
@@ -59,30 +55,20 @@ function App() {
           />
           <button onClick={searchPressed}>Search</button>
         </div>
-        {loader &&
-          <CircularProgress />
 
-        }
+        {loader && <CircularProgress />}
 
-
-        {/* If weather is not undefined display results from API */}
         {typeof weather.main !== "undefined" ? (
           <div>
-            {/* Location  */}
-            {weatherEmoji || ""}
+            {weatherEmoji}
             <p>{weather.name}</p>
-
-            {/* Temperature Celsius  */}
             <p>{weather.main.temp}°C</p>
-
-            {/* Condition (Sunny ) */}
             <p>{weather.weather[0].main}</p>
             <p>({weather.weather[0].description})</p>
           </div>
         ) : (
-          <div style={{ color: "red" }} >
+          <div style={{ color: "red" }}>
             {weather?.message}
-
           </div>
         )}
       </header>
